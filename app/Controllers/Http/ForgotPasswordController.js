@@ -3,6 +3,7 @@
 const Mail = use('Mail')
 const User = use('App/Models/User')
 const crypto = require('crypto')
+const { differenceInDays } = require('date-fns')
 
 class ForgotPasswordController {
   async store ({ request, response }) {
@@ -29,6 +30,26 @@ class ForgotPasswordController {
             .subject('Password Recovery | GoNode')
         }
       )
+    } catch (error) {
+      return response.status(error.status).send({ error: { message: error.message } })
+    }
+  }
+
+  async update ({ request, response }) {
+    try {
+      const { token, password } = request.all()
+      const user = await User.findByOrFail('token', token)
+      const isTokenExpired = differenceInDays(user.token_created_at, new Date()) > 2
+
+      if (isTokenExpired) {
+        return response.status(401).send({ error: 'The token has expired' })
+      }
+
+      user.token = null
+      user.token_created_at = null
+      user.password = password
+
+      await user.save()
     } catch (error) {
       return response.status(error.status).send({ error: { message: error.message } })
     }
