@@ -8,7 +8,6 @@ class UserController {
     const user = await User.create(data)
 
     return user
-    }
   }
 }
 
