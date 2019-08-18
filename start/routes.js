@@ -3,7 +3,7 @@
 const Route = use('Route')
 
 Route.post('auth', 'SessionController.store')
-Route.post('users', 'UserController.store')
+Route.post('users', 'UserController.store').validator('User')
 
 Route.post('forgot-password', 'ForgotPasswordController.store')
 Route.put('forgot-password', 'ForgotPasswordController.update')
