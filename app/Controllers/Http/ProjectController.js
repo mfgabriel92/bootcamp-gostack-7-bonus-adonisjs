@@ -3,19 +3,19 @@
 const Project = use('App/Models/Project')
 
 class ProjectController {
-  async index ({ request, response, view }) {
+  async index () {
     const projects = await Project.query().with('user').fetch()
     return projects
   }
 
-  async store ({ request, response, auth }) {
+  async store ({ request, auth }) {
     const data = request.only(['title', 'description'])
     const project = await Project.create({ ...data, user_id: auth.user.id })
 
     return project
   }
 
-  async show ({ params, _, response }) {
+  async show ({ params, response }) {
     try {
       const project = await Project.findOrFail(params.id)
       await project.load('user')
@@ -41,7 +41,7 @@ class ProjectController {
     }
   }
 
-  async destroy ({ params, _, response }) {
+  async destroy ({ params, response }) {
     try {
       const project = await Project.findOrFail(params.id)
       await project.delete()
